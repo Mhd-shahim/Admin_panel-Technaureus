@@ -7,6 +7,7 @@ urlpatterns = [
    path('edit-author/<int:author_id>/', views.editAuthor, name='edit_author'),
    path('detailed-author/<int:author_id>', views.singleAuthor, name='detailed_author'),
    path('edit-detailed-author/<int:book_id>', views.editBook, name='edit_detailed_author'),
+   path('add-book-detailed-author/', views.addBook_Author, name='add_book_detailed_author'),
    path('status-author/<int:author_id>', views.updateStatus, name='status_update'),
    path('status-book-single-author/<int:book_id>', views.updateStatusBook, name='status_update_book_single_author')
 ]

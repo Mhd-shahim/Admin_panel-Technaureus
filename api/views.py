@@ -10,11 +10,11 @@ class ListAllAuthor(generics.ListAPIView):
     serializer_class = AuthorSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['authorname', 'username', 'email']  
-    queryset = Author.objects.all()
+    queryset = Author.objects.filter(status=True)
 
 class ListAllBook(generics.ListAPIView):
     serializer_class = BookSerializer
-    queryset = Book.objects.all()
+    queryset = Book.objects.filter(status=True)
     filter_backends = [filters.SearchFilter]
     search_fields = ['book_name']
 

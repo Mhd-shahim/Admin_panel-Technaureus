@@ -5,6 +5,7 @@ from books.models import Book
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django import forms
+import string,random
 # Create your views here.
 
 
@@ -48,6 +49,12 @@ def addAuthor(request):
         if Author_name and Username and email: 
             if Author.objects.filter(authorname=Author_name).exists():
                 messages.info(request, "An author with the same name already exists.")
+
+            elif Author.objects.filter(username=Username).exists():
+                messages.info(request, "An author with the same User name already exists.")
+
+            elif Author.objects.filter(email=email).exists():
+                messages.info(request, "An author with the same email already exists.")    
             else:
                 new_author = Author.objects.create(authorname=Author_name, username=Username, email=email)
                 print("Object created:", new_author)
@@ -67,6 +74,12 @@ def editAuthor(request, author_id):
         if authorname and username and email:
             if Author.objects.filter(authorname=authorname).exists():
                 messages.info(request, "An author with the same name already exists.")
+                return redirect('Authors')
+            elif Author.objects.filter(username=username).exists():
+                messages.info(request, "An author with the same User name already exists.")
+                return redirect('Authors')
+            elif Author.objects.filter(email=email).exists():
+                messages.info(request, "An author with the same email already exists.") 
                 return redirect('Authors')
             else:
                 author.authorname = authorname
@@ -120,7 +133,36 @@ def updateStatus(request, author_id):
     else:
         form = AuthorModelForm(instance=author_instance)
         return render(request, 'author.html', {'form': form, 'author_id': author_id})
-    
+
+def generate_random_book_id():
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choices(characters, k=8))
+
+def addBook_Author(request):
+    if request.method == 'POST':
+        author_name = request.POST.get('authorname')
+        book_name = request.POST.get('bookname')
+        
+        try:
+            author = Author.objects.get(authorname=author_name)
+        except Author.DoesNotExist:
+            messages.info(request, "Author doesn't exist")
+            return redirect(f'/authors/detailed-author/{author.id}')
+
+        if author and book_name:
+            if Book.objects.filter(book_name=book_name).exists():
+                messages.info(request, "A book with the same name already exists.")
+                return redirect(f'/authors/detailed-author/{author.id}')
+            else:
+                book_id = generate_random_book_id()
+                new_book = Book.objects.create(book_name=book_name, book_id=book_id, author=author)
+                print("Object created:", new_book)
+                return redirect(f'/authors/detailed-author/{author.id}')
+        else:
+            messages.info(request, "*All fields are required")
+            return redirect(f'/authors/detailed-author/{author.id}')
+
+
 def editBook(request, book_id):
     book = get_object_or_404(Book, pk=book_id)
     

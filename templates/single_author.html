@@ -121,11 +121,12 @@
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <form action="{% url 'add_book' %}" method="post">
+        <form action="{% url 'add_book_detailed_author' %}" method="post">
             {% csrf_token %}
         <div style="display: flex; flex-direction:column" class="pt-5 ps-3 pe-3">
             <input type="text" class="mt-3 mb-3 input-auth" placeholder="Book name:" required name="bookname">
-            <input type="text" class="mt-3 mb-3 input-auth" placeholder="Author name:" required name="authorname">   
+            <input type="hidden" class="mt-3 mb-3 input-auth" placeholder="Author name:" required name="authorname" value="{{author.authorname}}">
+            <p>Author Name: {{author.authorname}}</p>   
         </div>
         
         <div class="modal-footer" style="display: flex; justify-content:space-around">

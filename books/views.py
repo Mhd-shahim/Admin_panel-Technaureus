@@ -80,10 +80,13 @@ def editBook(request, book_id):
                 messages.info(request, "A book with the same name already exists.")
                 return redirect('Books')
             else:
-                book.author.authorname = author_name
-                book.book_name = book_name
-                book.save()
-            
+                if Author.objects.filter(authorname=author_name).exists():
+                    book.author.authorname = author_name
+                    book.book_name = book_name
+                    book.save()
+                else:
+                    messages.info(request, "No such author exists")
+                    return redirect('Books')
             return redirect('Books')
     else:
         return render(request, 'Books.html', {'book': book})  
