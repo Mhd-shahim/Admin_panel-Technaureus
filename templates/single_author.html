@@ -1,0 +1,223 @@
+{% extends "main.html" %}
+
+{% block style%}
+    <style>
+        .input-auth{
+            border: none;
+            outline:none;
+            border-bottom:1px solid grey;
+        }
+    
+        .cancel-btn{
+            width: 170px;
+            height: 40px;
+            border-radius: 50px;
+            border: 1px solid grey;
+            background: none;
+            color: grey;
+        }
+        .add-btn{
+            width: 170px;
+            height: 40px;
+            border: none;
+            border-radius: 50px;
+            background-color: rgb(93, 156, 219);
+            color: white;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+          }
+          
+          /* Hide default checkbox */
+          .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+          
+          /* Style the slider (knob) */
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 34px;
+          }
+          
+          /* Style the slider when it's active */
+          .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+          }
+          
+          /* Change background color when checked */
+          .toggle-switch input:checked + .slider {
+            background-color: #2196F3;
+          }
+          
+          /* Move the slider when checked */
+          .toggle-switch input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+          }
+          .search-wrap{
+            position: relative;
+            display: flex;
+            align-items: center;
+          }
+          .search-wrap i{
+            position: absolute;
+            right: 20px;
+          }
+
+    </style>
+{%endblock%}
+
+{% block content %}
+    
+<div class="mt-5" style="margin-left: 300px;">
+    <p>Author Name: <b>{{author.authorname}}</b></p>
+    <p>User Name: <b>{{author.username}}</b></p>
+    <p>email: <b>{{author.email}}</b></p>
+</div> 
+<div class="search-auth">
+    <div class="input-group">
+        <form action="" method="post">
+        {% csrf_token %}
+            <div class="search-wrap">
+                <input type="text" name="search" class="ps-3 search" placeholder="Search Books..." required>
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </form>
+    </div>
+    <div>
+        {% for message in messages %}
+        <h6 class="text-center" style="color: red;">{{message}}!!!</h6>
+        {% endfor %}
+    </div>
+    <!-- Button trigger modal -->
+<button type="button" class="add-author" data-toggle="modal" data-target="#exampleModal">
+    Add Book
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <form action="{% url 'add_book' %}" method="post">
+            {% csrf_token %}
+        <div style="display: flex; flex-direction:column" class="pt-5 ps-3 pe-3">
+            <input type="text" class="mt-3 mb-3 input-auth" placeholder="Book name:" required name="bookname">
+            <input type="text" class="mt-3 mb-3 input-auth" placeholder="Author name:" required name="authorname">   
+        </div>
+        
+        <div class="modal-footer" style="display: flex; justify-content:space-around">
+          <button type="button" class="cancel-btn" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="add-btn">Add</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% if books %}
+<div class="table">
+<table>
+  <tr>
+    <th>No</th>
+    <th>Book Name</th>
+    <th>Book Id</th>
+    <th>Created Date</th>
+    <th>Action</th>
+    <th>Status</th>
+  </tr>
+  {% for book in books %}
+  <tr>
+    <th>{{forloop.counter}}</th>
+    <td>{{book.book_name}}</td>
+    <td>{{book.book_id}}</td>
+    <td>{{book.created_date}}</td>
+    <td>
+        <div style="display: flex; justify-content:space-around" class="ms-3 me-3">
+            
+            <!-- Button trigger modal -->
+            <button type="button" class="" data-toggle="modal" data-target="#exampleModal1{{book.id}}" style="border: none;">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal1{{book.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content"> 
+                    <div>
+                        <form action="{% url 'edit_detailed_author' book.id %}" method="post">
+                            {% csrf_token %}
+                        <div style="display: flex; flex-direction:column" class="pt-5 ps-3 pe-3">
+                            <input type="text" class="mt-3 mb-3 input-auth" value="{{book.book_name}}" placeholder="Book name:" required name="bookname">
+                            <input type="text" class="mt-3 mb-3 input-auth" value="{{book.author.authorname}}" placeholder="Author name:" required name="authorname"> 
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="display: flex; justify-content:space-around">
+                        <button type="button" class="cancel-btn" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="add-btn">Add</button>
+                    </div>
+                    </form>
+                </div>
+                </div>
+            </div>
+            
+        </div>
+    </td>
+    <td>
+      <form id="status-form-{{ book.id }}" action="{% url 'status_update_book_single_author' book.id %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="book_id" value="{{ book.id }}">
+        <label class="toggle-switch">
+            <input type="checkbox" name="status" {% if book.status %}checked{% endif %} onchange="submitForm('{{ book.id }}')">
+            <span class="slider"></span>
+        </label>            
+    </form>    
+    </td>
+  </tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="pagination" style="margin-left: 300px; color:blue">
+    <span class="step-links">
+        {% if books.has_previous %}
+            <a href="?page=1">&laquo; first</a>&nbsp|
+            <a href="?page={{ books.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ books.number }} of {{ books.paginator.num_pages }}.
+        </span>
+
+        {% if books.has_next %}
+            <a href="?page={{ books.next_page_number }}">next</a>&nbsp|
+            <a href="?page={{ books.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+{% else %}
+<h3 class="text-danger text-center mt-5">Sorry! No books</h3>
+{% endif %}
+{% endblock %}
